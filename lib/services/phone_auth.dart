@@ -13,7 +13,7 @@ class PhoneAuth {
   PhoneAuth({required this.phoneNo});
 
 
-  Future<void> verifyPhone(BuildContext context) async {
+  Future<void> verifyPhone(BuildContext context, Function setData) async {
 
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phoneNo,
@@ -33,20 +33,21 @@ class PhoneAuth {
         // Sign the user in (or link) with the auto-generated credential
         await auth.signInWithCredential(credential);
       },
+
       timeout: const Duration(seconds: 60),
       codeAutoRetrievalTimeout: (String verificationId) { },
+
       codeSent: (String verificationId, int? forceResendingToken) async {
        String smsCode = 'xxxxxx';
-
+       setData(verificationId);
         // Create a PhoneAuthCredential with the code
-        PhoneAuthCredential credential =
-        PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-        //
+        // PhoneAuthCredential credential =
+        // PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
         // // Sign the user in (or link) with the credential
         // await auth.signInWithCredential(credential);
-
-        // verifyCode(verificationId, smsCode);
       },
+
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
           print('The provided phone number is not valid.');
@@ -62,19 +63,13 @@ class PhoneAuth {
   Future<void> signInWithPhoneNumber(String verificationId, String smsCode, BuildContext context)
   async {
     try {
-      // AuthCredential credential = PhoneAuthProvider.credential(
-      //     verificationId: verificationId, smsCode: smsCode);
+
       PhoneAuthCredential credential =
       PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
       await auth.signInWithCredential(credential);
 
-      // UserCredential userCredential =
-      //     await auth.signInWithCredential(credential);
-
-      //     //todo verification complete
-      //     //   print('signedIn 333');
+         //todo verification complete
       Navigator.of(context).pop();
-      // }
     } catch (e) {
       print(e);
     }

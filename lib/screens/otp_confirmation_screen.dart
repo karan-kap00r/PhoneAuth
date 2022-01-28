@@ -27,7 +27,7 @@ class _OTPConfirmationPageState extends State<OTPConfirmationPage> {
     super.initState();
     phoneNo = widget.phoneNo;
     phoneAuth = PhoneAuth(phoneNo: widget.phoneNo);
-    phoneAuth.verifyPhone(context).whenComplete((){
+    phoneAuth.verifyPhone(context,setData).whenComplete((){
       setState(() {});
     });
   }
@@ -135,7 +135,6 @@ class _OTPConfirmationPageState extends State<OTPConfirmationPage> {
     setState(() {
       verificationIdFinal = verificationId;
     });
-    // startTimer();
   }
 }
 
