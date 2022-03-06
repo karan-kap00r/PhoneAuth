@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fire/screens/SignUpPage.dart';
+import 'package:flutter_fire/screens/HomePage.dart';
+import 'package:flutter_fire/screens/PhoneAuth.dart';
+import 'package:flutter_fire/screens/login_screen.dart';
 import 'package:flutter_fire/services/Auth_Service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
-import 'HomePage.dart';
 
-class SignInPage extends StatefulWidget {
-  SignInPage({Key? key}) : super(key: key);
+
+class SignUpPage extends StatefulWidget {
+  SignUpPage({Key? key}) : super(key: key);
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignUpPageState extends State<SignUpPage> {
   firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
   TextEditingController _emailController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
   bool circular = false;
   AuthClass authClass = AuthClass();
-
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Sign In",
+                "Sign Up",
                 style: TextStyle(
                   fontSize: 35,
                   color: Colors.white,
@@ -43,13 +44,17 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(
                 height: 20,
               ),
-              buttonItem("assets/google.svg", "Continue with Google", 25, () {
-                authClass.googleSignIn(context);
-              }),
+              buttonItem("assets/google.svg", "Continue with Google", 25,
+                      () async {
+                    await authClass.googleSignIn(context);
+                  }),
               SizedBox(
                 height: 15,
               ),
-              buttonItem("assets/phone.svg", "Continue with Mobile", 30, () {}),
+              buttonItem("assets/phone.svg", "Continue with Mobile", 30, () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (builder) => PhoneAuthPage()));
+              }),
               SizedBox(
                 height: 18,
               ),
@@ -76,7 +81,7 @@ class _SignInPageState extends State<SignInPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "If you don't have an Account? ",
+                    "If you alredy have an Account? ",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -86,11 +91,11 @@ class _SignInPageState extends State<SignInPage> {
                     onTap: () {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (builder) => SignUpPage()),
+                          MaterialPageRoute(builder: (builder) => SignInPage()),
                               (route) => false);
                     },
                     child: Text(
-                      "SignUp",
+                      "Login",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -99,17 +104,6 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                 ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Forgot Password?",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
             ],
           ),
@@ -121,9 +115,12 @@ class _SignInPageState extends State<SignInPage> {
   Widget colorButton() {
     return InkWell(
       onTap: () async {
+        setState(() {
+          circular = true;
+        });
         try {
           firebase_auth.UserCredential userCredential =
-          await firebaseAuth.signInWithEmailAndPassword(
+          await firebaseAuth.createUserWithEmailAndPassword(
               email: _emailController.text, password: _pwdController.text);
           print(userCredential.user?.email);
           setState(() {
@@ -156,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
           child: circular
               ? CircularProgressIndicator()
               : Text(
-            "Sign In",
+            "Sign Up",
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -168,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget buttonItem(
-      String imagepath, String buttonName, double size, final Function()? onTap) {
+      String imagepath, String buttonName, double size, Function()? onTap) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -246,97 +243,3 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
-
-
-
-
-
-
-
-
-//******************************************************
-// class LogInScreen extends StatelessWidget {
-//   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-//
-//   late String phoneNo;
-//   FocusNode _blankFocusNode = FocusNode();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     var heightPiece = MediaQuery.of(context).size.height / 10;
-//     var widthPiece = MediaQuery.of(context).size.width / 10;
-//     return SafeArea(
-//       child: Scaffold(
-//         backgroundColor: Colors.teal[400],
-//         body: GestureDetector(
-//           behavior: HitTestBehavior.opaque,
-//           onTap: () {
-//             FocusScope.of(context).requestFocus(_blankFocusNode);
-//           },
-//           child: Form(
-//             key: _formKey,
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Flexible(child: buildCircleAvatar(heightPiece)),
-//                 SizedBox(height: 20),
-//                 Padding(
-//                     padding: EdgeInsets.symmetric(horizontal: widthPiece),
-//                     child: buildCustomTextFieldForMobileNo()),
-//                 SizedBox(height: 20),
-//                 Padding(
-//                   padding: EdgeInsets.symmetric(horizontal: widthPiece),
-//                   child: buildCustomButtonForSendOTPButton(context),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   CircleAvatar buildCircleAvatar(double heightPiece) {
-//     return CircleAvatar(
-//         backgroundColor: Colors.teal[400],
-//         radius: heightPiece * 1.5,
-//         child: Image(
-//           image: AssetImage('assets/flutterfire.png'),
-//         ));
-//   }
-//
-//   CustomButton buildCustomButtonForSendOTPButton(BuildContext context) {
-//     return CustomButton(
-//         text: 'Send OTP',
-//         onPressed: () {
-//           if (_formKey.currentState!.validate()) {
-//             Navigator.of(context).push(CupertinoPageRoute(
-//                 builder: (BuildContext context) =>
-//                     OTPConfirmationPage(phoneNo: phoneNo)));
-//           }
-//         }, textColor: null, buttonColor: null,);
-//   }
-//
-//   CustomTextField buildCustomTextFieldForMobileNo() {
-//     return CustomTextField(
-//         maxLength: 10,
-//         maxLines: null,
-//         onChanged: ((value) {
-//           phoneNo = '+91$value';
-//         }),
-//         hintText: 'Enter 10 digit mobile no.',
-//         inputType: TextInputType.phone,
-//         onSaved: ((value) {
-//           phoneNo = '+91$value';
-//         }),
-//         validator: (value) {
-//           if (value!.length < 10 || value.length > 10) {
-//             return "Invalid";
-//           } else {
-//             print(value.length);
-//             _formKey.currentState!.save();
-//             return null;
-//           }
-//         }, initialValue: null, prefixText: null,);
-//   }
-// }
